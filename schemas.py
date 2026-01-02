@@ -4,25 +4,29 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 
 
-class Author(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+class AuthorBase(BaseModel):
     name: str
     bio: str
 
-class AuthorCreate(Author):
+class AuthorCreate(AuthorBase):
     pass
 
-class Book(BaseModel):
+class Author(AuthorBase):
     id: int
+    model_config = ConfigDict(from_attributes=True)
+
+class BookBase(BaseModel):
     title: str
     summary: str
     publication_date: date
     author: Author
-    model_config = ConfigDict(from_attributes=True)
 
-class BookCreate(BaseModel):
+class BookCreate(BookBase):
     title: str
     summary: str
     author_id: int
     publication_date: date
 
+class Book(BookBase):
+    id: int
+    model_config = ConfigDict(from_attributes=True)
