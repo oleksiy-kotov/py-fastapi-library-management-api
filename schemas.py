@@ -6,7 +6,6 @@ from pydantic import ConfigDict
 
 class Author(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    id: int
     name: str
     bio: str
 
@@ -14,13 +13,16 @@ class AuthorCreate(Author):
     pass
 
 class Book(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
     id: int
     title: str
+    summary: str
+    publication_date: date
+    author: Author
+    model_config = ConfigDict(from_attributes=True)
 
-class BookCreate(Book):
+class BookCreate(BaseModel):
     title: str
     summary: str
-    authors_id: int
+    author_id: int
     publication_date: date
 

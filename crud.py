@@ -1,11 +1,16 @@
+from typing import Optional
+
 from sqlalchemy.orm import Session
 
 import models
 import schemas
 
 
-def get_all_authors(db: Session):
-    return db.query(models.DBAuthor).all()
+def get_all_authors(
+        db: Session,
+        skip: int = 0,
+        limit: int = 10):
+    return db.query(models.DBAuthor).offset(skip).limit(limit).all()
 
 def get_author_by_name(db: Session, name: str):
     return db.query(models.DBAuthor).filter(models.DBAuthor.name == name).first()
@@ -24,15 +29,14 @@ def create_author(db: Session, author: schemas.AuthorCreate):
     return db_author
 
 def get_all_books(db: Session,
-                  title: str | None = None,
-                  author: str | None = None):
+                  skip: int = 0,
+                  limit: int = 10,
+                  author_id: Optional[int] = None,):
     queryset = db.query(models.DBBook)
 
-    if title is not None:
-        queryset = queryset.filter(models.DBBook.title == title)
-    if author is not None:
-        queryset = queryset.filter(models.DBAuthor.id == author)
-    return queryset.all()
+    if author_id is not None:
+        queryset = queryset.filter(models.DBBook.author_id == author_id)
+    return queryset.offset(skip).limit(limit).all()
 
 def get_book_by_id(db: Session, id: int):
     return db.query(models.DBBook).filter(models.DBBook.id == id).first()
@@ -43,7 +47,7 @@ def get_book_by_title(db: Session, title: str):
 def create_book(db: Session, book: schemas.BookCreate):
     db_book = models.DBBook(
         title=book.title,
-        author_id=book.authors_id,
+        author_id=book.author_id,
         summary=book.summary,
         publication_date=book.publication_date,
     )
